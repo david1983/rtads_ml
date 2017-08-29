@@ -19,7 +19,6 @@ def fit():
       return apierrors.NoData()
 
    X = req["dataset"]
-
    X_train = X[0: int(len(X)*0.66)]
    
    # fit the model
@@ -33,6 +32,5 @@ def fit():
       "train": X_train, 
       "train_labels": y_pred_train.tolist(),
       "dataset": X, 
-      "labels": y_pred_test.tolist(),
-      
+      "labels": y_pred_test.tolist()      
       })
