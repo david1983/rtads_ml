@@ -3,8 +3,13 @@ import json
 from flask import Flask, request
 from google.cloud import storage
 
+import algorithms.dbscan as dbscan
+import algorithms.svm as svm
+
 app = Flask(__name__)
 
+app.register_blueprint(dbscan.dbscanBP)
+app.register_blueprint(svm.svmBp)
 
 @app.route('/')
 def hello():
@@ -50,5 +55,7 @@ def server_error(e):
 
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
-    # application on Google App Engine. See entrypoint in app.yaml.
+    # application on Google App Engine. See entrypoint in app.yaml.    
     app.run(host='127.0.0.1', port=8080, debug=True)
+
+
