@@ -11,11 +11,11 @@ app = Flask(__name__)
 app.register_blueprint(dbscan.dbscanBP)
 app.register_blueprint(svm.svmBp)
 
+
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
-
 
 
 @app.route('/upload', methods=['POST'])
@@ -36,9 +36,7 @@ def upload():
     blob = bucket.blob(uploaded_file.filename)
 
     blob.upload_from_string(
-        uploaded_file.read(),
-        content_type=uploaded_file.content_type
-    )
+        uploaded_file.read(), content_type=uploaded_file.content_type)
 
     # The public URL can be used to directly access the uploaded file via HTTP.
     return blob.public_url
@@ -55,7 +53,5 @@ def server_error(e):
 
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
-    # application on Google App Engine. See entrypoint in app.yaml.    
+    # application on Google App Engine. See entrypoint in app.yaml.
     app.run(host='127.0.0.1', port=8080, debug=True)
-
-
