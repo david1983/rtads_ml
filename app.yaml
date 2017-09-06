@@ -8,5 +8,5 @@ runtime_config:
 
 #[START env]
 env_variables:
-    CLOUD_STORAGE_BUCKET: ml-bucket
+    CLOUD_STORAGE_BUCKET: ml-data-bucket
 #[END env]
