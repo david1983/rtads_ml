@@ -22,6 +22,7 @@ def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
 
+# handle errors
 @app.errorhandler(Exception)
 def all_exception_handler(error):
     return json.dumps({"error": str(error)}), 500
