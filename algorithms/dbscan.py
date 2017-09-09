@@ -31,7 +31,7 @@ def fit():
         min_samples = req["params"]["min"]
         user_id = req["params"]["user_id"]
         project_id = req["params"]["project_id"]
-        filename = req["params"]["project_id"]
+        filename = req["params"]["filename"]
         if(user_id == None or project_id == None or filename == None):  return apierrors.NoData()        
         if "max" in req:
             max_samples = req["params"]["max"]
