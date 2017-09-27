@@ -7,9 +7,17 @@ import json
 from flask import Flask, request
 import algorithms.dbscan as dbscan
 import algorithms.svm as svm
+import mwares.auth as authmw
+import services.apierrors as apierrors
 
 # instantiate a new Flask application
 app = Flask(__name__)
+
+@app.before_request
+def before_request():
+    if request.headers["auth"]!="321":
+        return apierrors.NoAuthToken()
+    
 
 # blueprints registration
 app.register_blueprint(dbscan.dbscanBP)
