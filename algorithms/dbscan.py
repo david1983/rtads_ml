@@ -40,7 +40,6 @@ def fit():
 
     
     fullPath = user_id + "/"+project_id+"/" + filename
-
     dataset = read_file(fullPath)
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
     le = preprocessing.LabelEncoder()
