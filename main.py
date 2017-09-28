@@ -5,8 +5,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS']= "gcloud.json"
 import logging
 import json
 from flask import Flask, request
-import algorithms.dbscan as dbscan
-import algorithms.svm as svm
+from algorithms import dbscan, svm, knn, lof,pca
 import mwares.auth as authmw
 import services.apierrors as apierrors
 
@@ -22,7 +21,9 @@ def before_request():
 # blueprints registration
 app.register_blueprint(dbscan.dbscanBP)
 app.register_blueprint(svm.svmBp)
-
+app.register_blueprint(knn.knnBP)
+app.register_blueprint(lof.lofBP)
+app.register_blueprint(pca.pcaBP)
 
 # global routes
 @app.route('/')
