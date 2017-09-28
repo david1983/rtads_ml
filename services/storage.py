@@ -5,7 +5,6 @@ try:
 except ImportError:
    import urllib.request as urllib2
    
-
 client = storage.Client()
 bucket = client.get_bucket('ml-data-bucket')
 
