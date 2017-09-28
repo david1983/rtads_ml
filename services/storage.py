@@ -1,6 +1,11 @@
 from google.cloud import storage
 from datetime import timedelta
-import urllib2
+try:
+   import urllib2
+except ImportError:
+   import urllib.request as urllib2
+   
+
 client = storage.Client()
 bucket = client.get_bucket('ml-data-bucket')
 
