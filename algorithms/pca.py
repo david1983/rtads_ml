@@ -1,8 +1,7 @@
-from flask import Blueprint, request
-import services.apierrors as apierrors
-from services.storage import read_file, write_file
-from sklearn.decomposition import PCA
-
+import services.apierrors   as apierrors
+from services.storage       import read_file, write_file
+from sklearn.decomposition  import PCA
+from flask                  import Blueprint, request
 
 pcaBP = Blueprint("dbscanBP", __name__)
 
@@ -31,7 +30,7 @@ def fit():
     pca = PCA(n_components=dimensions)
     transformed = pca.fit_transform(dataset)
     resultObj = {
-        "original": dataset
+        "original": dataset,
         "transformed": transformed        
     }            
     # resultObj = {}

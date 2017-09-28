@@ -1,16 +1,15 @@
 import pickle
 import json
-from io import StringIO
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-from sklearn import preprocessing
-import pandas as pd
-import numpy as np
-import datetime as dt
-from sklearn import metrics
-from flask import Blueprint, request
-import services.apierrors as apierrors
-from services.storage import read_file, write_file
+
+import pandas               as pd
+import numpy                as np
+import services.apierrors   as apierrors
+from io                     import StringIO
+from sklearn.cluster        import DBSCAN
+from sklearn.preprocessing  import StandardScaler
+from sklearn                import preprocessing
+from flask                  import Blueprint, request
+from services.storage       import read_file, write_file
 
 
 dbscanBP = Blueprint("dbscanBP", __name__)
