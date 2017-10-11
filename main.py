@@ -14,7 +14,7 @@ from io                     import StringIO
 from flask_cors import CORS, cross_origin
 import matplotlib
 matplotlib.use('Agg')
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 import base64
 # instantiate a new Flask application
 app = Flask(__name__)
@@ -50,13 +50,11 @@ def hello():
     return json.dumps({"version": 1})
 
 from io import BytesIO
-def plot(data):
+def plot(plot):
     image = StringIO()    
-    image = BytesIO()
-    plot = data.plot()
-    fig = plot.get_figure()          
-    
-    print(fig)  
+    image = BytesIO()   
+    print(plot) 
+    fig = plot.get_figure()                  
     fig.savefig(image, format='png')
     image.seek(0)  # rewind to beginning of file
     figdata_png = image.getvalue()     
@@ -65,6 +63,7 @@ def plot(data):
 
 @app.route('/analyse', methods=['POST'])
 def analyse():
+    from pandas.plotting import scatter_matrix
     req=request.get_json()
     user_id = req["params"]["user_id"]
     project_id = req["params"]["project_id"]
@@ -73,10 +72,18 @@ def analyse():
     dataset = read_file(fullPath)
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
     file = StringIO(dataset.decode('utf-8'))
-    dataset = pd.read_csv(file)
-    img = plot(dataset)
+    dataset = pd.read_csv(file) 
+    hp = plt.subplot()
+    dataset.hist(ax=hp)
+    dp = dataset.plot(kind='density', subplots=True, layout=(3,3), sharex=False)
+    bp = dataset.plot(kind='box', subplots=True, layout=(3,3), sharex=False, sharey=False)
+    # sm = scatter_matrix(dataset)
     resultset = {
-        "plot": img
+        "plot": plot(dataset.plot()),
+        "hist_plot": plot(hp),
+        "density_plot": plot(dp),
+        "box_plot": plot(bp),
+        # "scatter_matrix": plot(sm)
     }
     return json.dumps(resultset)
     
@@ -94,6 +101,7 @@ def page_not_found(e):
 
 @app.errorhandler(500)
 def server_error(e):
+    print(e)
     logging.exception('An error occurred during a request.')
     return """
     An internal error occurred: <pre>{}</pre>
