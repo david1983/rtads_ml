@@ -18,9 +18,9 @@ sarimaxBp = Blueprint("sarimaxBp", __name__)
 def root():
     return json.dumps({
         "name":
-        "Stochastic Autoregression Integrated Moving Average model with eXogenous inputs model ",
+            "Stochastic Autoregression Integrated Moving Average model with eXogenous inputs model ",
         "type":
-        "regression"
+            "regression"
     })
 
 
@@ -74,19 +74,19 @@ def fit():
                 results = mod.fit()
                 pdqparams.append([param, param_seasonal, results.aic])
             except:
-                continue    
+                continue
 
-    for i in pdqparams:        
+    for i in pdqparams:
         if(minval == None): minval = i[2]
         if (i[2] < minval):
             minval = i[2]
             minparams = i
-            
+
     mod = sm.tsa.statespace.SARIMAX(y,
-                                order=minparams[0],
-                                seasonal_order= minparams[1],
-                                enforce_stationarity=False,
-                                enforce_invertibility=False)
+                                    order=minparams[0],
+                                    seasonal_order= minparams[1],
+                                    enforce_stationarity=False,
+                                    enforce_invertibility=False)
 
     results = mod.fit()
 

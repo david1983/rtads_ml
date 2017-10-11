@@ -1,10 +1,9 @@
-from google.cloud import storage
 from google.cloud import datastore
 
 dc = datastore.Client()
 
 class Projects:
-   def __init__(self):      
+   def __init__(self):
       self.kind="projects"
 
    def create(self, data):
