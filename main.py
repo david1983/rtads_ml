@@ -12,7 +12,10 @@ import pandas as pd
 from services.storage import read_file, write_file
 from io                     import StringIO
 from flask_cors import CORS, cross_origin
-
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot
+import base64
 # instantiate a new Flask application
 app = Flask(__name__)
 cors = CORS(app)
@@ -20,8 +23,11 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.after_request # blueprint can also be app~~
 def after_request(response):
-    header = response.headers
+    header = response.headers    
     header['Access-Control-Allow-Origin'] = '*'
+    header['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+    header['Access-Control-Allow-Headers'] = "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, auth"
+
     return response
 
 # @app.before_request
@@ -43,6 +49,20 @@ def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
 
+from io import BytesIO
+def plot(data):
+    image = StringIO()    
+    image = BytesIO()
+    plot = data.plot()
+    fig = plot.get_figure()          
+    
+    print(fig)  
+    fig.savefig(image, format='png')
+    image.seek(0)  # rewind to beginning of file
+    figdata_png = image.getvalue()     
+    d = base64.encodestring(image.getvalue()).decode('ascii')   
+    return '%s' % (d)
+
 @app.route('/analyse', methods=['POST'])
 def analyse():
     req=request.get_json()
@@ -54,9 +74,12 @@ def analyse():
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
     file = StringIO(dataset.decode('utf-8'))
     dataset = pd.read_csv(file)
-    description = dataset.describe()
-    head = dataset.head()
-    resultObj = {description, head}
+    img = plot(dataset)
+    resultset = {
+        "plot": img
+    }
+    return json.dumps(resultset)
+    
 
 # handle errors
 @app.errorhandler(Exception)
