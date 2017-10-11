@@ -2,6 +2,7 @@ import services.apierrors   as apierrors
 from services.storage import read_file, write_file
 from sklearn.neighbors import NearestNeighbors
 from flask import Blueprint, request
+import json
 
 knnBP = Blueprint("knnBP", __name__)
 
@@ -18,6 +19,7 @@ def root():
 
 @knnBP.route("/knn/fit", methods=['POST'])
 def fit():
+    req = request.get_json()
     neighburs = 2
     algorithm = "ball_tree"
     metric = "euclidean"
@@ -41,3 +43,5 @@ def fit():
         "distances": distances,
         "indices": indices
     }
+
+    return json.dumps(resultObj)

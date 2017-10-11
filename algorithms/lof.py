@@ -1,9 +1,9 @@
 import services.apierrors    as apierrors
 import numpy                 as np
+from services.storage import read_file, write_file
 from sklearn.neighbors       import LocalOutlierFactor
 from flask                   import Blueprint, request
-
-
+import json
 
 lofBP = Blueprint("lofBP", __name__)
 
@@ -18,6 +18,7 @@ def root():
 
 @lofBP.route("/knn/fit", methods=['POST'])
 def fit():
+    req=request.get_json()
     neighburs=2
     if("params" in req):
         neighburs = req["params"]["neighbours"]

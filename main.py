@@ -8,14 +8,26 @@ from flask import Flask, request
 from algorithms import dbscan, svm, knn, lof,pca
 import mwares.auth as authmw
 import services.apierrors as apierrors
+import pandas as pd
+from services.storage import read_file, write_file
+from io                     import StringIO
+from flask_cors import CORS, cross_origin
 
 # instantiate a new Flask application
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.before_request
-def before_request():
-    if request.headers["auth"]!="321":
-        return apierrors.NoAuthToken()
+@app.after_request # blueprint can also be app~~
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
+
+# @app.before_request
+# def before_request():
+    # if request.headers["auth"]!="321":
+    #     return apierrors.NoAuthToken()
     
 
 # blueprints registration
@@ -30,6 +42,21 @@ app.register_blueprint(pca.pcaBP)
 def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
+
+@app.route('/analyse', methods=['POST'])
+def analyse():
+    req=request.get_json()
+    user_id = req["params"]["user_id"]
+    project_id = req["params"]["project_id"]
+    filename = req["params"]["filename"]
+    fullPath = user_id + "/"+project_id+"/" + filename
+    dataset = read_file(fullPath)
+    if(dataset==None): return apierrors.ErrorMessage("dataset not found")
+    file = StringIO(dataset.decode('utf-8'))
+    dataset = pd.read_csv(file)
+    description = dataset.describe()
+    head = dataset.head()
+    resultObj = {description, head}
 
 # handle errors
 @app.errorhandler(Exception)
