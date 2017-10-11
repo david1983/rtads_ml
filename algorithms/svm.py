@@ -5,6 +5,7 @@ import datetime as dt
 from flask import Blueprint, request
 import services.apierrors as apierrors
 from sklearn import svm
+from services.storage import read_file, write_file
 
 svmBp = Blueprint("svmBp", __name__)
 
@@ -20,10 +21,18 @@ def root():
 @svmBp.route("/svm/fit", methods=['POST'])
 def fit():
     req = request.get_json()
-    if not "dataset" in req:
+    if "params" in req:
+        columns = req["params"]["columns"]
+        user_id = req["params"]["user_id"]
+        project_id = req["params"]["project_id"]
+        filename = req["params"]["project_id"]
+    else:
         return apierrors.NoData()
 
-    X = req["dataset"]
+    fullPath = user_id + "/"+project_id+"/" + filename
+    dataset = read_file(fullPath)
+    if(dataset==None): return apierrors.ErrorMessage("dataset not found")
+    X = dataset
     X_train = X[0:int(len(X) * 0.66)]
 
     # fit the model
@@ -39,3 +48,7 @@ def fit():
         "dataset": X,
         "labels": y_pred_test.tolist()
     })
+
+@svmBp.route("/svm/predict", methods=['POST'])
+def predict():
+    return ""
