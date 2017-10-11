@@ -12,7 +12,7 @@ def root():
     return json.dumps({
         "name": "knn",
         "type": "cluster",
-        "description": " algorithm is optional or a choice between {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}",
+        "description": " algorithm is optional or a choice between",
         "params": ["neighbours", "algorithm"]
     })
 
