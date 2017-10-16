@@ -90,6 +90,7 @@ def fit():
 
     results = mod.fit()
 
-
+    s = pickle.dumps(mod)
+    write_file(user_id, project_id, "pickle.pkl", s)
 
     return ""

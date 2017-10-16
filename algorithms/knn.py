@@ -3,6 +3,7 @@ from services.storage import read_file, write_file
 from sklearn.neighbors import NearestNeighbors
 from flask import Blueprint, request
 import json
+import pickle
 
 knnBP = Blueprint("knnBP", __name__)
 
@@ -37,7 +38,9 @@ def fit():
     fullPath = user_id + "/" + project_id + "/" + filename
     dataset = read_file(fullPath)
     nbrs = NearestNeighbors(n_neighbors=neighburs, algorithm=algorithm, metric=metric).fit(dataset)
-    distances, indices = nbrs.kneighbors(X)
+    s = pickle.dumps(nbrs)
+    write_file(user_id, project_id, "pickle.pkl", s)
+    distances, indices = nbrs.kneighbors(dataset)
     resultObj = {
         "original": dataset,
         "distances": distances,

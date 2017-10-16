@@ -4,6 +4,7 @@ from services.storage import read_file, write_file
 from sklearn.neighbors       import LocalOutlierFactor
 from flask                   import Blueprint, request
 import json
+import pickle
 
 lofBP = Blueprint("lofBP", __name__)
 
@@ -21,7 +22,7 @@ def fit():
     req=request.get_json()
     neighburs=2
     if("params" in req):
-        neighburs = req["params"]["neighbours"]
+        neighbours = req["params"]["neighbours"]
         user_id = req["params"]["user_id"]
         project_id = req["params"]["project_id"]
         filename = req["params"]["filename"]
@@ -31,7 +32,7 @@ def fit():
 
     fullPath = user_id + "/"+project_id+"/" + filename
     dataset = read_file(fullPath)
-    clf = LocalOutlierFactor(n_neighbors=neighburs)
+    clf = LocalOutlierFactor(n_neighbors=neighbours)
 
     y_pred = clf.fit_predict(dataset)
     y_pred_outliers = y_pred
@@ -41,6 +42,8 @@ def fit():
     Z = clf._decision_function(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
 
+    s = pickle.dumps(clf)
+    write_file(user_id, project_id, "pickle.pkl", s)
     resultObj = {
         "original": dataset,
         "outliers": y_pred_outliers,

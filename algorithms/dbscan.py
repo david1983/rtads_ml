@@ -52,10 +52,8 @@ def fit():
 
         # # X = req["dataset"]
     X = StandardScaler().fit_transform(X)
-    print(X)
     db = DBSCAN(eps, min_samples).fit(X)
-    s = pickle.dumps(db)
-    print(s)
+    s = pickle.dumps(db)    
     write_file(user_id, project_id, "pickle.pkl", s)
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True

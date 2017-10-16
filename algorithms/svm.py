@@ -42,6 +42,8 @@ def fit():
     y_pred_test = clf.predict(X)
     n_error_train = y_pred_train[y_pred_train == -1].size
     n_error_test = y_pred_test[y_pred_test == -1].size
+    s = pickle.dumps(clf)
+    write_file(user_id, project_id, "pickle.pkl", s)
     return json.dumps({
         "train": X_train,
         "train_labels": y_pred_train.tolist(),
