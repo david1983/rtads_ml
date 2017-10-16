@@ -77,7 +77,7 @@ def analyse():
     bp = dataset.boxplot()
     sm = scatter_matrix(dataset, alpha=0.2, figsize=(6, 6), diagonal='kde')
     resultset = {
-        "plot": plot(hp),
+        "plot": plot(dataset.plot),
         "hp_plot": plot(hp),
         "bp_plot": plot(bp)
     }
