@@ -52,7 +52,6 @@ def receive_message(topic_name, subscription_name):
     for ack_id, message in results:
         print('* {}: {}, {}'.format(message.message_id, message.data,
                                     message.attributes))
-
     # Acknowledge received messages. If you do not acknowledge, Pub/Sub will
     # redeliver the message.
     if results:
