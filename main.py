@@ -2,34 +2,38 @@
 import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS']= "gcloud.json"
 
-import logging
-import json
-from flask import Flask, request
-from algorithms import dbscan, svm, knn, lof,pca
-import mwares.auth as authmw
-import services.apierrors as apierrors
-import pandas as pd
-from services.storage import read_file, write_file
-from io                     import StringIO
-from flask_cors import CORS, cross_origin
+# Import libraries
 import matplotlib
 matplotlib.use('Agg')
+<<<<<<< HEAD
 from matplotlib import pyplot as plt
+=======
+import logging
+import json
+>>>>>>> 78ed15cfbe61c8e8f3e80d96dd70510a162e2366
 import base64
+import mwares.auth          as authmw
+import services.apierrors   as apierrors
+import pandas               as pd
+from flask              import Flask, request
+from algorithms         import dbscan, svm, knn, lof,pca
+from services.storage   import read_file, write_file
+from io                 import StringIO,BytesIO
+from matplotlib         import pyplot as plt
+
 # instantiate a new Flask application
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.after_request # blueprint can also be app~~
+# Configure CORS middleware
+@app.after_request 
 def after_request(response):
     header = response.headers    
     header['Access-Control-Allow-Origin'] = '*'
     header['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
     header['Access-Control-Allow-Headers'] = "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, auth"
-
     return response
 
+# Configure authentication method
 # @app.before_request
 # def before_request():
     # if request.headers["auth"]!="321":
@@ -49,12 +53,10 @@ def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
 
-from io import BytesIO
-def plot(plot):
-    image = StringIO()    
-    image = BytesIO()   
-    print(plot) 
-    fig = plot.get_figure()                  
+
+def plot(plot):     
+    image = BytesIO()    
+    fig = plot.get_figure()                   
     fig.savefig(image, format='png')
     image.seek(0)  # rewind to beginning of file
     figdata_png = image.getvalue()     
@@ -80,9 +82,9 @@ def analyse():
     # sm = scatter_matrix(dataset)
     resultset = {
         "plot": plot(dataset.plot()),
-        "hist_plot": plot(hp),
-        "density_plot": plot(dp),
-        "box_plot": plot(bp),
+        "hp_plot": plot(hp),
+        "dp_plot": plot(dp),
+        "bp_plot": plot(bp),
         # "scatter_matrix": plot(sm)
     }
     return json.dumps(resultset)
@@ -112,4 +114,4 @@ def server_error(e):
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)

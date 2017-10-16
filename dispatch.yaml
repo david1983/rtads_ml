@@ -1,0 +1,4 @@
+dispatch:
+# ML service serves simple hostname request.
+  - url: "*/ml/*"
+    service: ml
