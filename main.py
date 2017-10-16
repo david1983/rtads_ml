@@ -49,11 +49,9 @@ def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
 
-def plot(plot):
-    image = StringIO()    
+def plot(plot):     
     image = BytesIO()    
-    fig = plot.get_figure()              
-    print(fig)  
+    fig = plot.get_figure()                   
     fig.savefig(image, format='png')
     image.seek(0)  # rewind to beginning of file
     figdata_png = image.getvalue()     
