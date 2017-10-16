@@ -2,32 +2,33 @@
 import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS']= "gcloud.json"
 
+# Import libraries
 import logging
 import json
-from flask import Flask, request
-from algorithms import dbscan, svm, knn, lof,pca
-import mwares.auth as authmw
-import services.apierrors as apierrors
-import pandas as pd
-from services.storage import read_file, write_file
-from io                     import StringIO
-
 import matplotlib
-matplotlib.use('Agg')
-from matplotlib import pyplot as plt
 import base64
+import mwares.auth          as authmw
+import services.apierrors   as apierrors
+import pandas               as pd
+from flask              import Flask, request
+from algorithms         import dbscan, svm, knn, lof,pca
+from services.storage   import read_file, write_file
+from io                 import StringIO,BytesIO
+from matplotlib         import pyplot as plt
+
 # instantiate a new Flask application
 app = Flask(__name__)
 
-@app.after_request # blueprint can also be app~~
+# Configure CORS middleware
+@app.after_request 
 def after_request(response):
     header = response.headers    
     header['Access-Control-Allow-Origin'] = '*'
     header['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
     header['Access-Control-Allow-Headers'] = "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, auth"
-
     return response
 
+# Configure authentication method
 # @app.before_request
 # def before_request():
     # if request.headers["auth"]!="321":
@@ -47,7 +48,6 @@ def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"version": 1})
 
-from io import BytesIO
 def plot(plot):
     image = StringIO()    
     image = BytesIO()    
@@ -106,4 +106,4 @@ def server_error(e):
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
