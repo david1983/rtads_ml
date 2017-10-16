@@ -3,9 +3,10 @@ import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS']= "gcloud.json"
 
 # Import libraries
+import matplotlib
+matplotlib.use('Agg')
 import logging
 import json
-import matplotlib
 import base64
 import mwares.auth          as authmw
 import services.apierrors   as apierrors
