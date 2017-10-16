@@ -1,8 +1,4 @@
 dispatch:
-# Default service serves simple hostname request.
-  - url: "rtads-179207.appspot.com/"
-    service: default
-
 # ML service serves simple hostname request.
-  - url: "rtads-179207.appspot.com/ml/*"
+  - url: "*/ml/*"
     service: ml
