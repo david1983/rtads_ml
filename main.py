@@ -11,15 +11,13 @@ import services.apierrors as apierrors
 import pandas as pd
 from services.storage import read_file, write_file
 from io                     import StringIO
-from flask_cors import CORS, cross_origin
+
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import base64
 # instantiate a new Flask application
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.after_request # blueprint can also be app~~
 def after_request(response):
