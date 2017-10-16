@@ -73,13 +73,12 @@ def analyse():
     file = StringIO(dataset.decode('utf-8'))
     dataset = pd.read_csv(file)
     hp = plt.subplot()
-    dataset.hist(ax=hp)
-    bp = dataset.boxplot()
+    dataset.hist(ax=hp)    
     sm = scatter_matrix(dataset, alpha=0.2, figsize=(6, 6), diagonal='kde')
     resultset = {
         "plot": plot(dataset.plot()),
         "hp_plot": plot(hp),
-        "bp_plot": plot(bp)
+        "bp_plot": plot(dataset.boxplot())
     }
     return json.dumps(resultset)
     
