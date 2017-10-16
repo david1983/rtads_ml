@@ -14,7 +14,7 @@ from io                     import StringIO
 from flask_cors import CORS, cross_origin
 import matplotlib
 matplotlib.use('Agg')
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 import base64
 # instantiate a new Flask application
 app = Flask(__name__)
@@ -50,12 +50,10 @@ def hello():
     return json.dumps({"version": 1})
 
 from io import BytesIO
-def plot(data):
+def plot(plot):
     image = StringIO()    
-    image = BytesIO()
-    plot = data.plot()
-    fig = plot.get_figure()          
-    
+    image = BytesIO()    
+    fig = plot.get_figure()              
     print(fig)  
     fig.savefig(image, format='png')
     image.seek(0)  # rewind to beginning of file
@@ -65,6 +63,7 @@ def plot(data):
 
 @app.route('/analyse', methods=['POST'])
 def analyse():
+    from pandas.tools.plotting import scatter_matrix
     req=request.get_json()
     user_id = req["params"]["user_id"]
     project_id = req["params"]["project_id"]
@@ -74,9 +73,14 @@ def analyse():
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
     file = StringIO(dataset.decode('utf-8'))
     dataset = pd.read_csv(file)
-    img = plot(dataset)
+    hp = plt.subplot()
+    dataset.hist(ax=hp)
+    bp = dataset.boxplot()
+    sm = scatter_matrix(dataset, alpha=0.2, figsize=(6, 6), diagonal='kde')
     resultset = {
-        "plot": img
+        "plot": plot(hp),
+        "hp_plot": plot(hp),
+        "bp_plot": plot(bp)
     }
     return json.dumps(resultset)
     

@@ -1,4 +1,4 @@
-service: ml-service
+service: ml
 runtime: python
 env: flex
 entrypoint: gunicorn -b :$PORT main:app
