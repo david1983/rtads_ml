@@ -5,13 +5,8 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS']= "gcloud.json"
 # Import libraries
 import matplotlib
 matplotlib.use('Agg')
-<<<<<<< HEAD
-from matplotlib import pyplot as plt
-=======
-import logging
-import json
->>>>>>> 78ed15cfbe61c8e8f3e80d96dd70510a162e2366
 import base64
+import json
 import mwares.auth          as authmw
 import services.apierrors   as apierrors
 import pandas               as pd
@@ -76,16 +71,16 @@ def analyse():
     file = StringIO(dataset.decode('utf-8'))
     dataset = pd.read_csv(file) 
     hp = plt.subplot()
-    dataset.hist(ax=hp)
-    dp = dataset.plot(kind='density', subplots=True, layout=(3,3), sharex=False)
-    bp = dataset.plot(kind='box', subplots=True, layout=(3,3), sharex=False, sharey=False)
-    # sm = scatter_matrix(dataset)
+    dataset.hist(ax=hp, figsize=(24,24))
+    dp = dataset.plot(kind='density')
+    bp = dataset.plot(kind='box')
+    sm = scatter_matrix(dataset, figsize=(24,24)) 
     resultset = {
         "plot": plot(dataset.plot()),
         "hp_plot": plot(hp),
         "dp_plot": plot(dp),
         "bp_plot": plot(bp),
-        # "scatter_matrix": plot(sm)
+        "sm_plot": plot(sm[0][0])
     }
     return json.dumps(resultset)
     
