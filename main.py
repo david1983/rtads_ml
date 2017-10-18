@@ -15,6 +15,7 @@ from algorithms         import dbscan, svm, knn, lof,pca
 from services.storage   import read_file, write_file
 from io                 import StringIO,BytesIO
 from matplotlib         import pyplot as plt
+from sklearn.preprocessing import LabelEncoder as le
 
 # instantiate a new Flask application
 app = Flask(__name__)
@@ -65,16 +66,25 @@ def analyse():
     user_id = req["params"]["user_id"]
     project_id = req["params"]["project_id"]
     filename = req["params"]["filename"]
+
+        
     fullPath = user_id + "/"+project_id+"/" + filename
-    dataset = read_file(fullPath)
-    if(dataset==None): return apierrors.ErrorMessage("dataset not found")
-    file = StringIO(dataset.decode('utf-8'))
-    dataset = pd.read_csv(file) 
+    dataset_file = read_file(fullPath)    
+    if(dataset_file==None): return apierrors.ErrorMessage("dataset not found")
+    
+    
+    file = StringIO(dataset_file.decode('utf-8'))
+    dataset = pd.read_csv(file)     
+    if "label_encode" in req:
+        dataset = pd.read_csv(file, dtype="unicode")             
+        dataset = dataset.apply(le().fit_transform)
+    dataset = dataset.fillna(0)
+
     hp = plt.subplot()
-    dataset.hist(ax=hp, figsize=(24,24))
+    dataset.hist(ax=hp, figsize=(12,12))
     dp = dataset.plot(kind='density')
     bp = dataset.plot(kind='box')
-    sm = scatter_matrix(dataset, figsize=(24,24)) 
+    sm = scatter_matrix(dataset, figsize=(12,12)) 
     resultset = {
         "plot": plot(dataset.plot()),
         "hp_plot": plot(hp),
@@ -83,7 +93,8 @@ def analyse():
         "sm_plot": plot(sm[0][0])
     }
     return json.dumps(resultset)
-    
+
+
 
 # handle errors
 @app.errorhandler(Exception)
