@@ -94,8 +94,6 @@ def analyse():
     }
     return json.dumps(resultset)
 
-
-
 # handle errors
 @app.errorhandler(Exception)
 def all_exception_handler(error):
@@ -105,8 +103,6 @@ def all_exception_handler(error):
 def page_not_found(e):
     return json.dumps({"error": "route not found"}), 404
 
-
-
 @app.errorhandler(500)
 def server_error(e):
     print(e)
@@ -115,7 +111,6 @@ def server_error(e):
     An internal error occurred: <pre>{}</pre>
     See logs for full stacktrace.
     """.format(e), 500
-
 
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
