@@ -1,5 +1,6 @@
 from google.cloud import storage
 from datetime import timedelta
+import base64
 try:
    import urllib2
 except ImportError:
@@ -19,5 +20,12 @@ def read_file(file_path):
 
 def write_file(user_id, project_id, file_name, file_content):
    blob = bucket.blob(user_id + '/'+project_id+'/' + file_name)
-   blob.upload_from_string(file_content)
-   return
+   blob.upload_from_string(file_content)   
+   day = timedelta(days=365)
+   return blob.generate_signed_url(day)
+
+def write_base64_img(user_id, project_id, file_name, file_content):
+   blob = bucket.blob(user_id + '/'+project_id+'/' + file_name)
+   blob.upload_from_string(base64.b64decode(file_content))   
+   day = timedelta(days=365)
+   return blob.generate_signed_url(day)

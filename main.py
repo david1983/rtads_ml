@@ -12,7 +12,7 @@ import services.apierrors   as apierrors
 import pandas               as pd
 from flask              import Flask, request
 from algorithms         import dbscan, svm, knn, lof,pca
-from services.storage   import read_file, write_file
+from services.storage   import read_file, write_file, write_base64_img
 from io                 import StringIO,BytesIO
 from matplotlib         import pyplot as plt
 from sklearn.preprocessing import LabelEncoder as le
@@ -65,9 +65,7 @@ def analyse():
     req=request.get_json()
     user_id = req["params"]["user_id"]
     project_id = req["params"]["project_id"]
-    filename = req["params"]["filename"]
-
-        
+    filename = req["params"]["filename"]       
     fullPath = user_id + "/"+project_id+"/" + filename
     dataset_file = read_file(fullPath)    
     if(dataset_file==None): return apierrors.ErrorMessage("dataset not found")
@@ -85,12 +83,13 @@ def analyse():
     dp = dataset.plot(kind='density')
     bp = dataset.plot(kind='box')
     sm = scatter_matrix(dataset, figsize=(12,12)) 
+
     resultset = {
-        "plot": plot(dataset.plot()),
-        "hp_plot": plot(hp),
-        "dp_plot": plot(dp),
-        "bp_plot": plot(bp),
-        "sm_plot": plot(sm[0][0])
+        "plot":    write_base64_img(user_id,project_id,"plot.png",plot(dataset.plot())),
+        "hp_plot": write_base64_img(user_id,project_id,"hp.png",plot(hp)),
+        "dp_plot": write_base64_img(user_id,project_id,"dp.png",plot(dp)),
+        "bp_plot": write_base64_img(user_id,project_id,"bp.png",plot(bp)),
+        "sm_plot": write_base64_img(user_id,project_id,"sm.png",plot(sm[0][0]))
     }
     return json.dumps(resultset)
 
