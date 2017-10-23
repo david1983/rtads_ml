@@ -21,6 +21,8 @@ def root():
 
 
 def preProcess(dataset):
+    from sklearn.preprocessing  import StandardScaler
+    from sklearn                import preprocessing
     le = preprocessing.LabelEncoder()
     X = dataset.apply(le.fit_transform)
     X = StandardScaler().fit_transform(X)            
