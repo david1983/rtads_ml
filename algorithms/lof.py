@@ -17,7 +17,7 @@ def root():
         "params": ["neighbours", "algorithm"]
     })
 
-@lofBP.route("/knn/fit", methods=['POST'])
+@lofBP.route("/lof/fit", methods=['POST'])
 def fit():
     req=request.get_json()
     neighburs=2
@@ -50,3 +50,6 @@ def fit():
         "decision_function": Z
     }
 
+@lofBP.route("/lof/predict", methods=['POST'])
+def predict():
+    return "ok"

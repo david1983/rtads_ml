@@ -86,14 +86,7 @@ def predict():
 
     P = Projects(user_id, project_id)
     project = P.read(id=project_id)
-
     P.addDataset(data)
-    # fullPath = user_id + "/"+project_id+"/" + project.fileName
-    # dataset = read_file(fullPath)
-    # if(dataset==None): return apierrors.ErrorMessage("dataset not found")
-    # le = preprocessing.LabelEncoder()
-    # X = pd.read_csv(StringIO(dataset.decode('utf-8'))).tail(200)
-
     dataset = P.getDataset()
     X = []
     keys = []
