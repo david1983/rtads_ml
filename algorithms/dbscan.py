@@ -19,14 +19,22 @@ def root():
     return json.dumps({"name": "dbscan", "type": "clustering"})
 
 
+
+def preProcess(dataset):
+    le = preprocessing.LabelEncoder()
+    X = dataset.apply(le.fit_transform)
+    X = StandardScaler().fit_transform(X)            
+    return X
+
+
 @dbscanBP.route("/dbscan/fit", methods=['POST'])
 def fit():
     req = request.get_json()
     eps=0.7
     min_samples=4
     if("params" in req):
-        eps = req["params"]["eps"]
-        min_samples = req["params"]["min"]
+        eps = float(req["params"]["eps"])
+        min_samples = float(req["params"]["min"])
         user_id = req["params"]["user_id"]
         project_id = req["params"]["project_id"]
         filename = req["params"]["filename"]
@@ -36,24 +44,23 @@ def fit():
     else:
         return apierrors.NoData();
 
-
+    
     fullPath = user_id + "/"+project_id+"/" + filename
     dataset = read_file(fullPath)
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
-    le = preprocessing.LabelEncoder()
+    
     X = pd.read_csv(StringIO(dataset.decode('utf-8')))
-    X = X.fillna(0)
-    X = X.apply(le.fit_transform)
-    X = StandardScaler().fit_transform(X)
-
-    DB = DBSCAN(eps, min_samples)
-    s = pickle.dumps(DB)    
-    write_file(user_id, project_id, "pickle.pkl", s)
+    X = preProcess(dataset=X)
+    print(type(X[0][0]))
+    DB = DBSCAN(eps, min_samples)   
+    s = pickle.dumps(DB)
+    write_file(user_id, project_id, "pickle.pkl", s) 
     db = DB.fit(X)    
+    print("ok")
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
-    print(labels)
+    
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 
     resultObj = {
@@ -71,30 +78,50 @@ def predict():
     if("params" in req):            
         user_id = req["params"]["user_id"]
         project_id = req["params"]["project_id"]        
-        data = req["params"]["data"]
+        data = req["params"]["data"]        
     else:
         return apierrors.ErrorMessage("You need to specify parameters to load ")
 
-    project = Projects.read(id=project_id)
-    fullPath = user_id + "/"+project_id+"/" + project.fileName
-    dataset = read_file(fullPath)
-    if(dataset==None): return apierrors.ErrorMessage("dataset not found")
-    le = preprocessing.LabelEncoder()
-    X = pd.read_csv(StringIO(dataset.decode('utf-8'))).tail(200)
-    X = X.fillna(0)
-    X = X.apply(le.fit_transform)    
-    X = StandardScaler().fit_transform(X)
+    P = Projects(user_id, project_id)
+    project = P.read(id=project_id)
 
-    newData = pd.DataFrame(data);
-    X.append(newData)
+    P.addDataset(data)
+    # fullPath = user_id + "/"+project_id+"/" + project.fileName
+    # dataset = read_file(fullPath)
+    # if(dataset==None): return apierrors.ErrorMessage("dataset not found")
+    # le = preprocessing.LabelEncoder()
+    # X = pd.read_csv(StringIO(dataset.decode('utf-8'))).tail(200)
 
+    dataset = P.getDataset()
+    X = []
+    keys = []
+    
+    for i in dataset:       
+        a = json.dumps(i["data"])
+        b = json.loads(a)
+        X.append(b)
+        
+        # X.append()
+
+    X = pd.DataFrame(X)
+    print(X.head())
+    X = preProcess(dataset=X)
     pkl_file = read_file(user_id + "/"+project_id+"/pickle.pkl")
+    print(pkl_file.decode('ascii'))
     if(pkl_file==None): return apierrors.ErrorMessage("No pickle file found, maybe you should train the model first")
-    model = pickle.load(StringIO(pkl_file.decode('utf-8')))
-    model.fit(X)    
+    model = pickle.load(StringIO(pkl_file.decode('ascii')))
+    db = model.fit(X)    
+    core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+    core_samples_mask[db.core_sample_indices_] = True
+    labels = db.labels_
+    
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+
     resultObj = {
         "clusters": n_clusters_,
         "dataset": X.tolist(),
         "labels": labels.tolist()
     }
+    # return json.dumps(resultObj)
+
     return json.dumps(resultObj)
