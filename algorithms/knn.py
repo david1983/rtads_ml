@@ -1,5 +1,5 @@
 import services.apierrors   as apierrors
-from services.storage import read_file, write_file
+from services.storage import read_file, write_file, get_pickle
 from sklearn.neighbors import NearestNeighbors
 from flask import Blueprint, request
 from io                     import StringIO
@@ -59,5 +59,20 @@ def fit():
     print(pd.DataFrame(indices).describe())
     data = rawX.to_json()
     indexes = pd.DataFrame(indices).to_json()
-
     return '{ "data": ' + data + ', "indexes": '+indexes+'}'
+
+@knnBP.route("/knn/predict", methods=["POST"])
+def predict():
+    req=request.get_json()
+    if ("params" in req):       
+        user_id = req["params"]["user_id"]
+        project_id = req["params"]["project_id"]
+        filename = req["params"]["filename"]
+        if (user_id == None or project_id == None or filename == None):  return apierrors.NoData()
+    else:
+        return apierrors.NoData();
+    pkl_file = get_pickle(user_id + "/"+project_id+"/pickle.pkl")    
+    if(pkl_file==None): return apierrors.ErrorMessage("No pickle file found, maybe you should train the model first")    
+    model = pickle.load(pkl_file)
+    print(model.__dict__)
+    return "ok"

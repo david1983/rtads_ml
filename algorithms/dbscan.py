@@ -8,7 +8,7 @@ from sklearn.cluster        import DBSCAN
 from sklearn.preprocessing  import StandardScaler
 from sklearn                import preprocessing
 from flask                  import Blueprint, request
-from services.storage       import read_file, write_file
+from services.storage       import read_file, write_file, get_pickle
 from models.projects        import Projects
 
 dbscanBP = Blueprint("dbscanBP", __name__)
@@ -108,10 +108,8 @@ def predict():
     X = pd.DataFrame(X)
     print(X.head())
     X = preProcess(dataset=X)
-    pkl_file = read_file(user_id + "/"+project_id+"/pickle.pkl")
-    print(pkl_file.decode('ascii'))
-    if(pkl_file==None): return apierrors.ErrorMessage("No pickle file found, maybe you should train the model first")
-    model = pickle.load(StringIO(pkl_file.decode('ascii')))
+    pkl_file = get_pickle(user_id + "/"+project_id+"/pickle.pkl")    
+    model = pickle.load(pkl_file)
     db = model.fit(X)    
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
