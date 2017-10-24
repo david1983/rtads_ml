@@ -17,7 +17,7 @@ def root():
     return json.dumps({
         "name": "knn",
         "type": "cluster",
-        "description": " algorithm is optional or a choice between",
+        "description": "This is a supervised ML algorithm so you need to provide a labeled dataset",
         "params": ["neighbours", "algorithm"]
     })
 
