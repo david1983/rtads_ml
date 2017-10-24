@@ -8,6 +8,7 @@ from sklearn import svm
 from io import StringIO
 from services.storage import read_file, write_file, get_pickle
 import pickle
+from models.projects        import Projects
 
 svmBp = Blueprint("svmBp", __name__)
 
@@ -82,9 +83,37 @@ def predict():
     else:
         return apierrors.NoData()
     print("start")
-    pkl_path = user_id + "/"+project_id+"/pickle.pkl"
-    print(pkl_path)    
-    model = get_pickle(pkl_path)
-    y_pred = model.predict([data])    
+    P = Projects(user_id, project_id)
+    project = P.read(id=project_id)
+    P.addDataset(data)
+    dataset = P.getDataset()    
+    # reshape the dataset  to a dataframe like object
+    X = {}
+    if(type(dataset[0]["data"]) == str): dataset[0]["data"] = json.loads(dataset[0]["data"])
     
-    return json.dumps(y_pred)
+    for k in dataset[0]["data"]:
+        print(k)
+        X[k] = []
+    print(X)
+
+    for i in dataset:               
+        if(type(i["data"]) == str): obj=json.loads(i["data"])
+        else: obj=json.loads(json.dumps(i["data"]))
+        for k in obj:
+            X[k].append(obj[k])
+    # convert the array to pandas dataframe
+    
+    rawX = pd.DataFrame(X)    
+    
+    X = preProcess(dataset=rawX)
+    
+    pkl_file = get_pickle(user_id + "/"+project_id+"/pickle.pkl")    
+    if(pkl_file==None): return apierrors.ErrorMessage("No pickle file found, maybe you should train the model first")    
+    
+    model = pickle.load(pkl_file)        
+    obj = [X[0]]     
+    labels = pd.DataFrame(model.predict(X)).to_json()
+    return json.dumps({
+        "data": json.loads(rawX.to_json()),
+        "labels": json.loads(labels)
+    })

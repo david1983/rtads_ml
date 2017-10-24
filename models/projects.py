@@ -26,7 +26,9 @@ class Projects:
       def getDataset(self, limit=100):
             query = dc.query(kind=self.ds_kind)
             query.add_filter('projectId', '=', self.project_id)        
-            # query.order = ['userId', "createdAt"]               
+            query.add_filter('userId', '=', self.user_id)   
+            query.order = "-createdAt"
+            print(query)
             return list(query.fetch(limit=limit))
 
       def addDataset(self, data):

@@ -96,6 +96,7 @@ def analyse():
 # handle errors
 @app.errorhandler(Exception)
 def all_exception_handler(error):
+    print(error)
     return json.dumps({"error": str(error)}), 500
 
 @app.errorhandler(404)
