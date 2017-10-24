@@ -52,8 +52,8 @@ def fit():
     dataset = read_file(fullPath)
     print(dataset)
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
-    X = pd.read_csv(StringIO(dataset.decode('utf-8')))
-    X = preProcess(dataset=X)
+    rawX = pd.read_csv(StringIO(dataset.decode('utf-8')))
+    X = preProcess(dataset=rawX)
     X_train = X[0:int(len(X) * 0.66)]
     print("start")
     # fit the model
@@ -66,8 +66,8 @@ def fit():
     s = pickle.dumps(clf)
     write_file(user_id, project_id, "pickle.pkl", s)
 
-    return json.dumps({  
-        "dataset": json.loads(pd.DataFrame(X).to_json()),
+    return json.dumps({          
+        "dataset": json.loads(rawX.to_json()),
         "train_labels": y_pred_train.tolist(),        
         "labels": y_pred_test.tolist()
     })
@@ -91,10 +91,8 @@ def predict():
     X = {}
     if(type(dataset[0]["data"]) == str): dataset[0]["data"] = json.loads(dataset[0]["data"])
     
-    for k in dataset[0]["data"]:
-        print(k)
-        X[k] = []
-    print(X)
+    for k in dataset[0]["data"]:        
+        X[k] = []    
 
     for i in dataset:               
         if(type(i["data"]) == str): obj=json.loads(i["data"])

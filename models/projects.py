@@ -23,7 +23,7 @@ class Projects:
             print(entity)
             return entity.get(entityKey)
 
-      def getDataset(self, limit=100):
+      def getDataset(self, limit=500):
             query = dc.query(kind=self.ds_kind)
             query.add_filter('projectId', '=', self.project_id)        
             query.add_filter('userId', '=', self.user_id)   
@@ -41,10 +41,6 @@ class Projects:
                   'createdAt': str(datetime.now()),
                   'updatedAt': str(datetime.now())
             })
-            # dataset["data"] = data
-            # dataset["projectId"] = self.project_id
-            # dataset["userId"] = self.user_id
-            # dataset["createdAt"] = str(datetime.now())
-            # dataset["updatedAt"] = str(datetime.now())
-
             return dc.put(dataset)
+            
+            
