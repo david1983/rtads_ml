@@ -111,9 +111,8 @@ def predict():
     #     obj.append([i])
     
     data = rawX.to_json()
-    indexes = pd.DataFrame(indices).to_json()    
-    kneighbors = '2'
+    indexes = pd.DataFrame(indices).to_json()        
     print(nbrs.kneighbors(obj))
 
     print(kneighbors)
-    return '{ "data": ' + data + ', "indexes": '+indexes+', "kneighbours": '+kneighbors+'}'
+    return '{ "data": ' + data + ', "indexes": '+indexes+'}'

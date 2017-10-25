@@ -51,8 +51,8 @@ def fit():
     dataset = read_file(fullPath)
     if(dataset==None): return apierrors.ErrorMessage("dataset not found")
     
-    X = pd.read_csv(StringIO(dataset.decode('utf-8')))
-    X = preProcess(dataset=X)
+    rawX = pd.read_csv(StringIO(dataset.decode('utf-8')))
+    X = preProcess(dataset=rawX)
     print(type(X[0][0]))
     DB = DBSCAN(eps, min_samples)   
     s = pickle.dumps(DB)
@@ -67,8 +67,8 @@ def fit():
 
     resultObj = {
         "clusters": n_clusters_,
-        "dataset": X.tolist(),
-        "labels": labels.tolist()
+        "dataset": json.loads(rawX.to_json()),
+        "labels": json.loads(pd.DataFrame(labels).to_json())
     }
     # resultObj = {}
     return json.dumps(resultObj)

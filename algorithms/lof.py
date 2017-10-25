@@ -1,5 +1,7 @@
 import services.apierrors    as apierrors
 import numpy                 as np
+import pandas as pd
+from io import StringIO
 from services.storage import read_file, write_file
 from sklearn.neighbors       import LocalOutlierFactor
 from flask                   import Blueprint, request
@@ -7,6 +9,15 @@ import json
 import pickle
 
 lofBP = Blueprint("lofBP", __name__)
+
+def preProcess(dataset):
+    from sklearn.preprocessing  import StandardScaler
+    from sklearn                import preprocessing
+    le = preprocessing.LabelEncoder()
+    X = dataset.apply(le.fit_transform)
+    X = StandardScaler().fit_transform(X)            
+    return X
+
 
 @lofBP.route("/lof")
 def root():
@@ -33,22 +44,20 @@ def fit():
     fullPath = user_id + "/"+project_id+"/" + filename
     dataset = read_file(fullPath)
     clf = LocalOutlierFactor(n_neighbors=neighbours)
-
-    y_pred = clf.fit_predict(dataset)
+    rawX = pd.read_csv(StringIO(dataset.decode('utf-8')))
+    X = preProcess(dataset=rawX)
+    y_pred = clf.fit_predict(X)
     y_pred_outliers = y_pred
-
-    # plot the level sets of the decision function
-    xx, yy = np.meshgrid(np.linspace(-5, 5, 50), np.linspace(-5, 5, 50))
-    Z = clf._decision_function(np.c_[xx.ravel(), yy.ravel()])
-    Z = Z.reshape(xx.shape)
 
     s = pickle.dumps(clf)
     write_file(user_id, project_id, "pickle.pkl", s)
     resultObj = {
-        "original": dataset,
-        "outliers": y_pred_outliers,
-        "decision_function": Z
+        "dataset": json.loads(rawX.to_json()),
+        "labels": json.loads(pd.DataFrame(y_pred_outliers).to_json()),
+        
     }
+
+    return json.dumps(resultObj)
 
 @lofBP.route("/lof/predict", methods=['POST'])
 def predict():

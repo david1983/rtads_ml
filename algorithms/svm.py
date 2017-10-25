@@ -32,7 +32,7 @@ def root():
 
 @svmBp.route("/svm/fit", methods=['POST'])
 def fit():
-    nu=0.1
+    nu=0.3
     kernel="rbf"
     gamma=0.1    
     req = request.get_json()
@@ -67,8 +67,7 @@ def fit():
     write_file(user_id, project_id, "pickle.pkl", s)
 
     return json.dumps({          
-        "dataset": json.loads(rawX.to_json()),
-        "train_labels": y_pred_train.tolist(),        
+        "dataset": json.loads(rawX.to_json()),        
         "labels": y_pred_test.tolist()
     })
 
@@ -112,6 +111,6 @@ def predict():
     obj = [X[0]]     
     labels = pd.DataFrame(model.predict(X)).to_json()
     return json.dumps({
-        "data": json.loads(rawX.to_json()),
+        "dataset": json.loads(rawX.to_json()),
         "labels": json.loads(labels)
     })
