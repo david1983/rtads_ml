@@ -7,7 +7,7 @@ except ImportError:
    import urllib.request as urllib2
 
 client = storage.Client()
-bucket = client.get_bucket('ml-data-bucket')
+bucket = client.get_bucket('rtads-ml-data-bucket')
 
 def getSignedUrl(file_path):
    blob = bucket.get_blob(file_path)   
