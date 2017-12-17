@@ -43,7 +43,7 @@ def fit():
 
     fullPath = user_id + "/"+project_id+"/" + filename
     dataset = read_file(fullPath)
-    clf = LocalOutlierFactor(n_neighbors=neighbours)
+    clf = LocalOutlierFactor(n_neighbors=int(neighbours))
     rawX = pd.read_csv(StringIO(dataset.decode('utf-8')))
     X = preProcess(dataset=rawX)
     y_pred = clf.fit_predict(X)

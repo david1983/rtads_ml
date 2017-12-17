@@ -34,12 +34,20 @@ def root():
 def fit():
     nu=0.3
     kernel="rbf"
-    gamma=0.1    
+    gamma=0.1   
+    degree=3
+    coef0=0.0
+    tol=0.001
+    shrinking=True
     req = request.get_json()
     if "params" in req:
         if("nu" in req["params"]): nu = req["params"]["nu"]
         if("kernel" in req["params"]): kernel = req["params"]["kernel"]
         if("gamma" in req["params"]): gamma = req["params"]["gamma"]        
+        if("degree" in req["params"]): degree = req["params"]["degree"]        
+        if("coef0" in req["params"]): coef0 = req["params"]["coef0"]        
+        if("tol" in req["params"]): tol = req["params"]["tol"]        
+        if("shrinking" in req["params"]): shrinking = req["params"]["shrinking"]        
         user_id = req["params"]["user_id"]
         project_id = req["params"]["project_id"]
         filename = req["params"]["filename"]
@@ -55,9 +63,9 @@ def fit():
     rawX = pd.read_csv(StringIO(dataset.decode('utf-8')))
     X = preProcess(dataset=rawX)
     X_train = X[0:int(len(X) * 0.66)]
-    print("start")
+    print(nu,kernel,gamma)
     # fit the model
-    clf = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma)
+    clf = svm.OneClassSVM(degree=int(degree), coef0=float(coef0),tol=float(tol),shrinking=bool(shrinking), nu=float(nu), kernel=kernel, gamma=float(gamma))
     clf.fit(X_train)
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X)

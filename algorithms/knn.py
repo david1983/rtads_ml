@@ -29,7 +29,7 @@ def preProcess(dataset):
     X = StandardScaler().fit_transform(X)            
     return X
 
-@knnBP.route("/nn/fit", methods=['POST'])
+@knnBP.route("/knn/fit", methods=['POST'])
 def fit():
     req = request.get_json()
     neighburs = 2
@@ -52,18 +52,17 @@ def fit():
     X = preProcess(dataset=rawX)
 
     print(X)
-    NN = NearestNeighbors(n_neighbors=neighburs, algorithm=algorithm, metric=metric)
+    print(neighburs,algorithm,metric)
+    NN = NearestNeighbors(n_neighbors=int(neighburs), algorithm=algorithm, metric=metric)
     s = pickle.dumps(NN)
     write_file(user_id, project_id, "pickle.pkl", s)
     nbrs = NN.fit(X)
-    distances, indices = nbrs.kneighbors(X)
-    print(pd.DataFrame(X).describe())
-    print(pd.DataFrame(indices).describe())
+    distances, indices = nbrs.kneighbors(X)    
     data = rawX.to_json()
     indexes = pd.DataFrame(indices).to_json()
-    return '{ "data": ' + data + ', "indexes": '+indexes+'}'
+    return '{ "dataset": ' + data + ', "indexes": '+indexes+', "distances": '+ pd.DataFrame(distances).to_json() +'}'
 
-@knnBP.route("/nn/predict", methods=["POST"])
+@knnBP.route("/knn/predict", methods=["POST"])
 def predict():
     
     req=request.get_json()
@@ -113,6 +112,4 @@ def predict():
     data = rawX.to_json()
     indexes = pd.DataFrame(indices).to_json()        
     print(nbrs.kneighbors(obj))
-
-    print(kneighbors)
     return '{ "data": ' + data + ', "indexes": '+indexes+'}'
