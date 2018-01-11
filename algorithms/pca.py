@@ -10,8 +10,6 @@ pcaBP = Blueprint("pcaBP", __name__)
 def root():
     return json.dumps({"name": "pca", "type": "orthogonal linear transformation"})
 
-
-
 @pcaBP.route("/pca/transform", methods=['POST'])
 def fit():
     req=request.get_json()
