@@ -8,3 +8,4 @@ tensorflow>0
 keras>0
 honcho>0
 matplotlib>0
+scikit-learn>=0.24.2 # not directly required, pinned by Snyk to avoid a vulnerability
